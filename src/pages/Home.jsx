@@ -1,5 +1,5 @@
 import React from 'react'
-import {MainBanner} from '../component/MainBanner'
+import MainBanner from '../component/MainBanner'
 function Home() {
   return (
     <div className='mt-10'>
