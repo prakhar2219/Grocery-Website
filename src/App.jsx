@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 import Footer from './component/Footer.jsx'
 import { useAppContext } from './context/AppContext.jsx'
 import Login from './component/Login.jsx'
+import AllProducts from './pages/AllProducts.jsx'
 const App = () => {
   const isSellerPath=useLocation().pathname.includes("seller")
   const {showUserLogin}=useAppContext()
@@ -17,6 +18,8 @@ const App = () => {
       <div className={`${isSellerPath ? "" :"px-6 md:px-16 lg:px-24 xl:px-32"}`}>
         <Routes>
           <Route path='/' element={<Home/>}/>
+          <Route path='/products' element={<AllProducts/>}/>
+
         </Routes>
       </div>
       {!isSellerPath &&<Footer/>}

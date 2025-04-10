@@ -15,6 +15,7 @@ export const AppContextProvider = ({ children }) => {
   const [showUserLogin, setShowUserLogin] = useState(false);
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState({});
+  const [searchQuery, setSearchQuery] = useState({});
 
   // const fetchProducts=async()=>{
   //     const response=await fetch("https://dummyjson.com/products")
@@ -44,15 +45,15 @@ export const AppContextProvider = ({ children }) => {
 
   const removeCartItem = (itemId) => {
     let cartData = structuredClone(cartItems);
-    if(cartData[itemId]) {
-cartData[itemId] -= 1;
-if(cartData[itemId]===0){
-  delete cartData[itemId];
-}
+    if (cartData[itemId]) {
+      cartData[itemId] -= 1;
+      if (cartData[itemId] === 0) {
+        delete cartData[itemId];
+      }
     }
     toast.success("Item removed from cart");
     setCartItems(cartData);
-  }
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -74,6 +75,8 @@ if(cartData[itemId]===0){
     updateCartItem,
     removeCartItem,
     cartItems,
+    searchQuery,
+    setSearchQuery,
   };
   // The AppContext.Provider makes the value accessible to any child component wrapped inside this provider.
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
