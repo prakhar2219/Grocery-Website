@@ -54,6 +54,23 @@ export const AppContextProvider = ({ children }) => {
     toast.success("Item removed from cart");
     setCartItems(cartData);
   };
+  const getCartCount = () => {
+    let count = 0;
+    for (const item in cartItems) {
+      count += cartItems[item];
+    }
+    return count;
+  }
+  const getCartTotal = () => {
+    let total = 0;
+    for (const item in cartItems) {
+      const product = products.find((product) => product._id === item);
+      if (product) {
+        total += product.price * cartItems[item];
+      }
+    }
+    return total;
+  }
 
   useEffect(() => {
     fetchProducts();
@@ -77,6 +94,8 @@ export const AppContextProvider = ({ children }) => {
     cartItems,
     searchQuery,
     setSearchQuery,
+    getCartTotal,
+    getCartCount,
   };
   // The AppContext.Provider makes the value accessible to any child component wrapped inside this provider.
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
