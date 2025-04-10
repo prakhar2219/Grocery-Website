@@ -8,7 +8,11 @@ const ProductCategory = () => {
     const {category}=useParams()
 
     const searchCategory=categories.find((item)=>item.path.toLowerCase()===category)
-    const filteredProducts=products.filter((product)=>product.category===category)
+    // const filteredProducts=products.filter((product)=>product.category===category)
+    const filteredProducts = products.filter(
+        (product) => product.category?.toLowerCase() === category.toLowerCase()
+      );
+      
   return (
     <div className='mt-16'>
       {searchCategory && (
