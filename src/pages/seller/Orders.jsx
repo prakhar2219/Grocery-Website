@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { assets, dummyOrders } from '../../assets/assets';
+import { useAppContext } from '../../context/AppContext';
 
 const Orders = () => {
     const { currency } = useAppContext();
@@ -37,7 +38,7 @@ const Orders = () => {
                         <p>{order.address.phone}</p>
                     </div>
 
-                    <p className="font-medium text-lg my-auto">{currency}{order.amount}</p>
+                    <p className="font-medium text-lg my-auto">{currency}${order.amount}</p>
 
                     <div className="flex flex-col text-sm">
                         <p>Method: {order.paymentType}</p>
