@@ -14,6 +14,9 @@ import AddAddress from './pages/AddAddress.jsx'
 import MyOrders from './pages/MyOrders.jsx'
 import SellerLogin from './component/Seller/SellerLogin.jsx'
 import SellerLayout from './pages/seller/SellerLayout.jsx'
+import AddProduct from './pages/seller/AddProduct.jsx'
+import ProductList from './pages/seller/ProductList.jsx'
+import Orders from './pages/seller/Orders.jsx'
 const App = () => {
   const isSellerPath=useLocation().pathname.includes("seller")
   const {showUserLogin,isSeller}=useAppContext()
@@ -32,7 +35,9 @@ const App = () => {
           <Route path='/add-address' element={<AddAddress/>}/>
           <Route path='/my-orders' element={<MyOrders/>}/>
           <Route path='/seller' element={isSeller ? <SellerLayout/> :<SellerLogin/>}/>
-
+<Route index element={isSeller ? <AddProduct/> : null}/>
+<Route path='product-list' element={<ProductList/>}/>
+<Route path='orders' element={<Orders/>}/>
 
         </Routes>
       </div>
