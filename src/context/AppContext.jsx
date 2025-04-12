@@ -5,7 +5,7 @@ import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
 import axios from "axios";
 //  hold shared state that will  be used throughout the app.
-axios.defaults.withCredentials=true;
+axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 export const AppContext = createContext();
 // This component wraps around other components to provide them access to the shared state.
@@ -37,7 +37,7 @@ export const AppContextProvider = ({ children }) => {
     } catch (error) {
       setIsSeller(false);
     }
-  }
+  };
 
   const fetchUser = async () => {
     try {
@@ -45,12 +45,11 @@ export const AppContextProvider = ({ children }) => {
       if (data.success) {
         setUser(data.user);
         setCartItems(data.user.cartItems);
-      } 
-    }
-    catch (error) {
+      }
+    } catch (error) {
       setUser(null);
     }
-  }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -98,7 +97,7 @@ export const AppContextProvider = ({ children }) => {
       count += cartItems[item];
     }
     return count;
-  }
+  };
   const getCartTotal = () => {
     let total = 0;
     for (const item in cartItems) {
@@ -108,14 +107,28 @@ export const AppContextProvider = ({ children }) => {
       }
     }
     return total;
-  }
+  };
 
   useEffect(() => {
     fetchUser();
     fetchSeller();
     fetchProducts();
   }, []);
-
+  useEffect(() => {
+    const updateCart = async () => {
+      try {
+        const { data } = await axios.post("/api/cart/update", { cartItems });
+        if (!data.success) {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+    if (user) {
+      updateCart();
+    }
+  }, [cartItems]);
   // const value={navigate,user,setUser,isSeller,setIsSeller}
   // All the state values and their setters + navigate are packed into an object to be shared.
   const value = {
