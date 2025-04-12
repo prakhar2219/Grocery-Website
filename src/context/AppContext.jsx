@@ -3,7 +3,10 @@ import { useContext, createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { dummyProducts } from "../assets/assets";
 import toast from "react-hot-toast";
+import axios from "axios";
 //  hold shared state that will  be used throughout the app.
+axios.defaults.withCredentials=true;
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 export const AppContext = createContext();
 // This component wraps around other components to provide them access to the shared state.
 export const AppContextProvider = ({ children }) => {
@@ -22,6 +25,19 @@ export const AppContextProvider = ({ children }) => {
   //     const data=await response.json()
   //     setProducts(data.products)
   // }
+
+  const fetchSeller = async () => {
+    try {
+      const { data } = await axios.get("/api/seller/is-auth");
+      if (data.success) {
+        setIsSeller(true);
+      } else {
+        setIsSeller(false);
+      }
+    } catch (error) {
+      setIsSeller(false);
+    }
+  }
 
   const fetchProducts = async () => {
     setProducts(dummyProducts);
@@ -73,6 +89,7 @@ export const AppContextProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    fetchSeller();
     fetchProducts();
   }, []);
 
@@ -96,6 +113,7 @@ export const AppContextProvider = ({ children }) => {
     setSearchQuery,
     getCartTotal,
     getCartCount,
+    axios,
   };
   // The AppContext.Provider makes the value accessible to any child component wrapped inside this provider.
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
