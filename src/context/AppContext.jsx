@@ -40,7 +40,16 @@ export const AppContextProvider = ({ children }) => {
   }
 
   const fetchProducts = async () => {
-    setProducts(dummyProducts);
+    try {
+      const { data } = await axios.get("/api/products/list");
+      if (data.success) {
+        setProducts(data.products);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
   const addToCart = (itemId) => {
     let cartData = structuredClone(cartItems);
@@ -114,6 +123,7 @@ export const AppContextProvider = ({ children }) => {
     getCartTotal,
     getCartCount,
     axios,
+    fetchProducts,
   };
   // The AppContext.Provider makes the value accessible to any child component wrapped inside this provider.
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
