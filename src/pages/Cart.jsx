@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { assets, dummyAddress } from "../assets/assets";
+import { set } from "mongoose";
+import toast from "react-hot-toast";
 const Cart = () => {
   const [showAddress, setShowAddress] = useState(false);
   const {
@@ -13,14 +15,14 @@ const Cart = () => {
     navigate,
     getCartTotal,
     getCartCount,
+    axios,
+    user,
   } = useAppContext();
 
   const [cartArray, setCartArray] = React.useState([]);
-  const [addresses, setAddresses] = React.useState(dummyAddress);
+  const [addresses, setAddresses] = React.useState([]);
   const [showAddresses, setShowAddresses] = React.useState(false);
-  const [selectedAddresses, setSelectedAddresses] = React.useState(
-    dummyAddress[0]
-  );
+  const [selectedAddresses, setSelectedAddresses] = React.useState(null);
   const [paymentOption, setPaymentOption] = React.useState("COD");
 const placeOrder= async ()=>{}
   const getCart = () => {
@@ -32,11 +34,33 @@ const placeOrder= async ()=>{}
     }
     setCartArray(tempArray);
   };
+  const getUserAddresses = async () => {
+    try {
+      const { data } = await axios.get("/api/address/get");
+      if (data.success) {
+        setAddresses(data.addresses);
+        if (data.addresses.length > 0) {
+          setSelectedAddresses(data.addresses[0]);
+        }
+        else
+        {
+          toast.error(data.message)
+        }
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
   useEffect(() => {
     if (products.length > 0 && cartItems) {
       getCart();
     }
   }, [products, cartItems]);
+  useEffect(() => {
+    if(user){
+      getUserAddresses()
+    }
+  }, [user]);
   return products.length > 0 && cartItems ? (
     <div className="flex flex-col md:flex-row mt-16">
       <div className="flex-1 max-w-4xl">
