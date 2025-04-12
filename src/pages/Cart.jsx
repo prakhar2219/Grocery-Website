@@ -17,6 +17,7 @@ const Cart = () => {
     getCartCount,
     axios,
     user,
+    setCartItems,
   } = useAppContext();
 
   const [cartArray, setCartArray] = React.useState([]);
@@ -24,7 +25,32 @@ const Cart = () => {
   const [showAddresses, setShowAddresses] = React.useState(false);
   const [selectedAddresses, setSelectedAddresses] = React.useState(null);
   const [paymentOption, setPaymentOption] = React.useState("COD");
-const placeOrder= async ()=>{}
+  const placeOrder = async () => {
+    try {
+      if (!selectedAddresses) {
+        return toast.error("Please select an address");
+      }
+      if (paymentOption === "COD") {
+        const { data } = await axios.post("/api/order/cod", {
+          userId: user._id,
+          items: cartArray.map((item) => ({
+            product: item._id,
+            quantity: item.quantity,
+          })),
+          address: selectedAddresses._id,
+        });
+        if (data.success) {
+          toast.success(data.message);
+          setCartItems({});
+          navigate("/my-orders");
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
   const getCart = () => {
     let tempArray = [];
     for (const key in cartItems) {
@@ -41,24 +67,22 @@ const placeOrder= async ()=>{}
         setAddresses(data.addresses);
         if (data.addresses.length > 0) {
           setSelectedAddresses(data.addresses[0]);
-        }
-        else
-        {
-          toast.error(data.message)
+        } else {
+          toast.error(data.message);
         }
       }
     } catch (error) {
       toast.error(error.message);
     }
-  }
+  };
   useEffect(() => {
     if (products.length > 0 && cartItems) {
       getCart();
     }
   }, [products, cartItems]);
   useEffect(() => {
-    if(user){
-      getUserAddresses()
+    if (user) {
+      getUserAddresses();
     }
   }, [user]);
   return products.length > 0 && cartItems ? (
@@ -66,9 +90,7 @@ const placeOrder= async ()=>{}
       <div className="flex-1 max-w-4xl">
         <h1 className="text-3xl font-medium mb-6">
           Shopping Cart{" "}
-          <span className="text-sm text-primary">
-            {getCartCount()} Items
-          </span>
+          <span className="text-sm text-primary">{getCartCount()} Items</span>
         </h1>
 
         <div className="grid grid-cols-[2fr_1fr_1fr] text-gray-500 text-base font-medium pb-3">
@@ -106,7 +128,13 @@ const placeOrder= async ()=>{}
                   </p>
                   <div className="flex items-center">
                     <p>Qty:</p>
-                    <select onChange={e => updateCartItem(product._id,Number(e.target.value))} value={cartItems[product._id]} className="outline-none">
+                    <select
+                      onChange={(e) =>
+                        updateCartItem(product._id, Number(e.target.value))
+                      }
+                      value={cartItems[product._id]}
+                      className="outline-none"
+                    >
                       {Array(
                         cartItems[product._id] > 9 ? cartItems[product._id] : 9
                       )
@@ -176,15 +204,18 @@ const placeOrder= async ()=>{}
             </button>
             {showAddress && (
               <div className="absolute top-12 py-1 bg-white border border-gray-300 text-sm w-full">
-                {
-                  addresses.map((address,index)=>(                  <p
-                    onClick={() => {setSelectedAddresses(address); setShowAddress(false)}}
+                {addresses.map((address, index) => (
+                  <p
+                    onClick={() => {
+                      setSelectedAddresses(address);
+                      setShowAddress(false);
+                    }}
                     className="text-gray-500 p-2 hover:bg-gray-100"
                   >
-                    {address.street},{address.city},{address.state},{address.country}
-                  </p>)) 
-
-                }
+                    {address.street},{address.city},{address.state},
+                    {address.country}
+                  </p>
+                ))}
                 <p
                   onClick={() => navigate("/add-address")}
                   className="text-primary text-center cursor-pointer p-2 hover:bg-primary-dull/10"
@@ -197,7 +228,10 @@ const placeOrder= async ()=>{}
 
           <p className="text-sm font-medium uppercase mt-6">Payment Method</p>
 
-          <select onChange={e => setPaymentOption(e.target.value)} className="w-full border border-gray-300 bg-white px-3 py-2 mt-2 outline-none">
+          <select
+            onChange={(e) => setPaymentOption(e.target.value)}
+            className="w-full border border-gray-300 bg-white px-3 py-2 mt-2 outline-none"
+          >
             <option value="COD">Cash On Delivery</option>
             <option value="Online">Online Payment</option>
           </select>
@@ -208,7 +242,10 @@ const placeOrder= async ()=>{}
         <div className="text-gray-500 mt-4 space-y-2">
           <p className="flex justify-between">
             <span>Price</span>
-            <span>{currency}{getCartTotal()}</span>
+            <span>
+              {currency}
+              {getCartTotal()}
+            </span>
           </p>
           <p className="flex justify-between">
             <span>Shipping Fee</span>
@@ -216,16 +253,25 @@ const placeOrder= async ()=>{}
           </p>
           <p className="flex justify-between">
             <span>Tax (2%)</span>
-            <span>{currency}{getCartTotal()*2/100}</span>
+            <span>
+              {currency}
+              {(getCartTotal() * 2) / 100}
+            </span>
           </p>
           <p className="flex justify-between text-lg font-medium mt-3">
             <span>Total Amount:</span>
-            <span>{currency}{getCartTotal()+getCartTotal()*2/100}</span>
+            <span>
+              {currency}
+              {getCartTotal() + (getCartTotal() * 2) / 100}
+            </span>
           </p>
         </div>
 
-        <button onClick={placeOrder()} className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition">
-{paymentOption==="COD"?"Place Order":"Proceed to checkout "}
+        <button
+          onClick={placeOrder()}
+          className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition"
+        >
+          {paymentOption === "COD" ? "Place Order" : "Proceed to checkout "}
         </button>
       </div>
     </div>

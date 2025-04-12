@@ -151,6 +151,7 @@ export const AppContextProvider = ({ children }) => {
     getCartCount,
     axios,
     fetchProducts,
+    setCartItems,
   };
   // The AppContext.Provider makes the value accessible to any child component wrapped inside this provider.
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
